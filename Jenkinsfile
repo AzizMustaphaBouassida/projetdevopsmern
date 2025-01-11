@@ -6,10 +6,23 @@ pipeline {
     }
 
     stages {
+        stage('Check Docker Installation') {
+            steps {
+                script {
+                    sh '''
+                    if ! command -v docker &> /dev/null; then
+                        echo "Docker not found. Ensure Docker is installed and accessible from Jenkins."
+                        exit 127
+                    fi
+                    '''
+                }
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh 'docker build -t $DOCKER_IMAGE .'
+                    sh 'docker build -t $DOCKER_IMAGE ./gestion-parc-backend'
                 }
             }
         }
@@ -27,11 +40,13 @@ pipeline {
 
         stage('Push to Docker Hub') {
             steps {
-                script {
-                    sh '''
-                    docker login -u azizbouassida11 -p Saisho@1899
-                    docker push $DOCKER_IMAGE
-                    '''
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    script {
+                        sh '''
+                        echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker push $DOCKER_IMAGE
+                        '''
+                    }
                 }
             }
         }
