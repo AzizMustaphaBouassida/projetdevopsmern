@@ -12,7 +12,7 @@ pipeline {
                 echo "Checking out source code..."
                 checkout scm: [
                     $class: 'GitSCM',
-                    branches: [[name: 'main']], // Change to 'master' if applicable
+                    branches: [[name: 'master']], // Change to 'master' if applicable
                     userRemoteConfigs: [[
                         url: 'https://github.com/AzizMustaphaBouassida/mern.git',
                         credentialsId: 'gitlab-credentials'
