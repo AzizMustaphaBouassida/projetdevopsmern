@@ -2,53 +2,77 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'azizbouassida11/gestion-parc-backend'
+        DOCKER_IMAGE = "azizbouassida11/gestion-parc-backend"  // Replace with your Docker image name
+        DOCKER_CREDENTIALS_ID = "dockerhub-credentials" // Replace with your Docker Hub credentials ID in Jenkins
     }
 
     stages {
-        stage('Check Docker Installation') {
+        stage('Checkout Code') {
             steps {
-                script {
-                    sh '''
-                    if ! command -v docker &> /dev/null; then
-                        echo "Docker not found. Ensure Docker is installed and accessible from Jenkins."
-                        exit 127
-                    fi
-                    '''
-                }
+                echo "Checking out source code..."
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: 'main']],
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/AzizMustaphaBouassida/mern.git',
+                        credentialsId: 'gitlab-credentials'
+                    ]]
+                ])
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    sh 'docker build -t $DOCKER_IMAGE ./gestion-parc-backend'
-                }
+                echo "Building Docker Image..."
+                sh '''
+                docker build -t $DOCKER_IMAGE .
+                '''
             }
         }
 
-        stage('Scan Vulnerabilities with Trivy') {
+        stage('Scan with Trivy') {
+    steps {
+        echo "Scanning Docker Image with Trivy..."
+        sh '''
+        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+        aquasec/trivy image $DOCKER_IMAGE || exit 1
+        '''
+    }
+}
+
+
+        stage('Push Docker Image') {
             steps {
-                script {
+                echo "Pushing Docker Image to Docker Hub..."
+                withCredentials([usernamePassword(credentialsId: "$DOCKER_CREDENTIALS_ID", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                     sh '''
-                    curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh
-                    ./trivy image $DOCKER_IMAGE
+                    echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+                    docker push $DOCKER_IMAGE
                     '''
                 }
             }
         }
 
-        stage('Push to Docker Hub') {
+        stage('Clean Unused Docker Images') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
-                    script {
-                        sh '''
-                        echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker push $DOCKER_IMAGE
-                        '''
-                    }
-                }
+                echo "Removing unused Docker images..."
+                sh '''
+                docker images -q | xargs docker rmi -f || true
+                '''
             }
+        }
+    }
+
+    post {
+        always {
+            echo "Cleaning up Docker system..."
+            sh 'docker system prune -f || true'
+        }
+        success {
+            echo "Pipeline completed successfully!"
+        }
+        failure {
+            echo "Pipeline failed. Check logs for details."
         }
     }
 }
