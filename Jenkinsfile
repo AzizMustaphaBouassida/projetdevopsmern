@@ -2,44 +2,41 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "azizbouassida11/gestion-parc-backend"  // Replace with your Docker image name
-        DOCKER_CREDENTIALS_ID = "dockerhub-credentials" // Replace with your Docker Hub credentials ID in Jenkins
+        DOCKER_IMAGE = "azizbouassida11/gestion-parc-backend"
+        DOCKER_CREDENTIALS_ID = "dockerhub-credentials"
     }
 
     stages {
         stage('Checkout Code') {
             steps {
                 echo "Checking out source code..."
-                checkout([
+                checkout scm: [
                     $class: 'GitSCM',
-                    branches: [[name: 'main']],
+                    branches: [[name: 'main']], // Change to 'master' if applicable
                     userRemoteConfigs: [[
                         url: 'https://github.com/AzizMustaphaBouassida/mern.git',
                         credentialsId: 'gitlab-credentials'
                     ]]
-                ])
+                ]
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 echo "Building Docker Image..."
-                sh '''
-                docker build -t $DOCKER_IMAGE .
-                '''
+                sh 'docker build -t $DOCKER_IMAGE ./gestion-parc-backend'
             }
         }
 
         stage('Scan with Trivy') {
-    steps {
-        echo "Scanning Docker Image with Trivy..."
-        sh '''
-        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
-        aquasec/trivy image $DOCKER_IMAGE || exit 1
-        '''
-    }
-}
-
+            steps {
+                echo "Scanning Docker Image with Trivy..."
+                sh '''
+                docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+                aquasec/trivy image $DOCKER_IMAGE || exit 1
+                '''
+            }
+        }
 
         stage('Push Docker Image') {
             steps {
@@ -56,9 +53,7 @@ pipeline {
         stage('Clean Unused Docker Images') {
             steps {
                 echo "Removing unused Docker images..."
-                sh '''
-                docker images -q | xargs docker rmi -f || true
-                '''
+                sh 'docker images -q | xargs docker rmi -f || true'
             }
         }
     }
