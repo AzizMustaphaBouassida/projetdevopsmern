@@ -1,0 +1,30 @@
+version: "3.8"
+services:
+  backend:
+    build:
+      context: ./gestion-parc-backend
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./gestion-parc-backend:/app
+      - /app/node_modules
+    depends_on:
+      - mongodb
+
+  frontend:
+    build:
+      context: ./gestion-parc-frontend
+    ports:
+      - "3001:80"
+
+  mongodb:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
