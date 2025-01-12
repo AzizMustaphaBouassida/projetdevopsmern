@@ -1,9 +1,12 @@
 pipeline {
     agent any
+
     environment {
-        DOCKER_IMAGE = 'azizbouassida11/gestion-parc-backend:latest' 
-        DOCKER_CREDENTIALS_ID = 'docker-hub-credentials' // Docker credentials ID
+        DOCKER_IMAGE = "azizbouassida11/gestion-parc-backend:latest" // Replace with your Docker image name
+        DOCKER_CREDENTIALS_ID = "docker-hub-credentials" // Jenkins credentials ID for Docker Hub
+        GIT_CREDENTIALS_ID = "github-credentials" // Jenkins credentials ID for GitHub
     }
+
     stages {
         stage('Checkout Code') {
             steps {
@@ -13,22 +16,21 @@ pipeline {
                     branches: [[name: 'main']],
                     userRemoteConfigs: [[
                         url: 'https://github.com/AzizMustaphaBouassida/projetdevopsmern',
-                        credentialsId: 'github-credentials'
+                        credentialsId: "$GIT_CREDENTIALS_ID"
                     ]]
                 ])
             }
         }
-        
+
         stage('Build Docker Image') {
             steps {
                 echo "Building Docker Image..."
                 sh '''
-                ls -l ./gestion-parc-backend
-                docker build -t $DOCKER_IMAGE ./gestion-parc-backend
+                docker build -t $DOCKER_IMAGE .
                 '''
             }
         }
-        
+
         stage('Push Docker Image') {
             steps {
                 echo "Pushing Docker Image to Docker Hub..."
@@ -40,32 +42,29 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Clean Unused Docker Images') {
             steps {
                 echo "Removing unused Docker images..."
-                sh 'docker images -q | xargs -r docker rmi -f || true'
-            }
-        }
-        
-        stage('Clean Workspace') {
-            steps {
-                echo "Cleaning workspace..."
-                cleanWs()
+                sh '''
+                docker system prune -f || true
+                '''
             }
         }
     }
-    
+
     post {
-        always {
-            echo "Cleaning up Docker system..."
-            sh 'docker system prune -f || true'
-        }
         success {
             echo "Pipeline completed successfully!"
         }
         failure {
             echo "Pipeline failed. Check logs for details."
+        }
+        always {
+            echo "Cleaning up Docker system..."
+            sh '''
+            docker system prune -f || true
+            '''
         }
     }
 }
