@@ -10,23 +10,30 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 echo "Checking out source code..."
-                checkout scm: [
-                    $class: 'GitSCM',
-                    branches: [[name: 'master']], 
-                    userRemoteConfigs: [[
-                        url: 'https://github.com/AzizMustaphaBouassida/mern.git',
-                        credentialsId: 'gitlab-credentials'
-                    ]]
-                ]
+                checkout([
+    $class: 'GitSCM',
+    branches: [[name: '*/master']],
+    doGenerateSubmoduleConfigurations: false,
+    extensions: [],
+    submoduleCfg: [],
+    userRemoteConfigs: [[
+        url: 'https://github.com/AzizMustaphaBouassida/mern.git',
+        credentialsId: 'gitlab-credentials'
+    ]]
+])
+
             }
         }
 
         stage('Build Docker Image') {
-            steps {
-                echo "Building Docker Image..."
-                sh 'docker build -t $DOCKER_IMAGE ./gestion-parc-backend'
-            }
-        }
+    steps {
+        echo "Building Docker Image..."
+        sh '''
+        ls -l ./gestion-parc-backend
+        docker build -t $DOCKER_IMAGE ./gestion-parc-backend
+        '''
+    }
+}
 
         stage('Scan with Trivy') {
             steps {
