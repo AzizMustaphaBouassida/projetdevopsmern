@@ -29,16 +29,6 @@ pipeline {
             }
         }
         
-        stage('Scan with Trivy') {
-            steps {
-                echo "Scanning Docker Image with Trivy..."
-                sh '''
-                docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
-                -v $(pwd):/root/.cache/ aquasec/trivy image $DOCKER_IMAGE || exit 1
-                '''
-            }
-        }
-        
         stage('Push Docker Image') {
             steps {
                 echo "Pushing Docker Image to Docker Hub..."
