@@ -12,7 +12,7 @@ pipeline {
                     $class: 'GitSCM',
                     branches: [[name: '*/master']],
                     userRemoteConfigs: [[
-                        url: 'git@github.com:AzizMustaphaBouassida/mern.git',
+                        url: 'https://github.com/AzizMustaphaBouassida/mern.git',
                         credentialsId: 'github-credentials'
                     ]]
                 ])
