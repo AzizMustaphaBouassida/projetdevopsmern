@@ -10,9 +10,9 @@ pipeline {
                 echo "Checking out source code..."
                 checkout([
                     $class: 'GitSCM',
-                    branches: [[name: '*/master']],
+                    branches: [[name: 'main']],
                     userRemoteConfigs: [[
-                        url: 'https://github.com/AzizMustaphaBouassida/mern.git',
+                        url: 'https://github.com/AzizMustaphaBouassida/projetdevopsmern',
                         credentialsId: 'github-credentials'
                     ]]
                 ])
