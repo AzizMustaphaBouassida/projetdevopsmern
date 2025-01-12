@@ -1,50 +1,44 @@
 pipeline {
     agent any
-
     environment {
-        DOCKER_IMAGE = "azizbouassida11/gestion-parc-backend"
-        DOCKER_CREDENTIALS_ID = "dockerhub-credentials"
+        DOCKER_IMAGE = 'your-dockerhub-repo/your-image-name:latest' // Define Docker image name
+        DOCKER_CREDENTIALS_ID = 'docker-hub-credentials' // Docker credentials ID
     }
-
     stages {
         stage('Checkout Code') {
             steps {
                 echo "Checking out source code..."
                 checkout([
-    $class: 'GitSCM',
-    branches: [[name: '*/master']],
-    doGenerateSubmoduleConfigurations: false,
-    extensions: [],
-    submoduleCfg: [],
-    userRemoteConfigs: [[
-        url: 'https://github.com/AzizMustaphaBouassida/mern.git',
-        credentialsId: 'gitlab-credentials'
-    ]]
-])
-
+                    $class: 'GitSCM',
+                    branches: [[name: '*/master']],
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/AzizMustaphaBouassida/mern.git',
+                        credentialsId: 'gitlab-credentials'
+                    ]]
+                ])
             }
         }
-
+        
         stage('Build Docker Image') {
-    steps {
-        echo "Building Docker Image..."
-        sh '''
-        ls -l ./gestion-parc-backend
-        docker build -t $DOCKER_IMAGE ./gestion-parc-backend
-        '''
-    }
-}
-
+            steps {
+                echo "Building Docker Image..."
+                sh '''
+                ls -l ./gestion-parc-backend
+                docker build -t $DOCKER_IMAGE ./gestion-parc-backend
+                '''
+            }
+        }
+        
         stage('Scan with Trivy') {
             steps {
                 echo "Scanning Docker Image with Trivy..."
                 sh '''
                 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
-                aquasec/trivy image $DOCKER_IMAGE || exit 1
+                -v $(pwd):/root/.cache/ aquasec/trivy image $DOCKER_IMAGE || exit 1
                 '''
             }
         }
-
+        
         stage('Push Docker Image') {
             steps {
                 echo "Pushing Docker Image to Docker Hub..."
@@ -56,15 +50,22 @@ pipeline {
                 }
             }
         }
-
+        
         stage('Clean Unused Docker Images') {
             steps {
                 echo "Removing unused Docker images..."
-                sh 'docker images -q | xargs docker rmi -f || true'
+                sh 'docker images -q | xargs -r docker rmi -f || true'
+            }
+        }
+        
+        stage('Clean Workspace') {
+            steps {
+                echo "Cleaning workspace..."
+                cleanWs()
             }
         }
     }
-
+    
     post {
         always {
             echo "Cleaning up Docker system..."
