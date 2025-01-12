@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        DOCKER_IMAGE = 'your-dockerhub-repo/your-image-name:latest' // Define Docker image name
+        DOCKER_IMAGE = 'azizbouassida11/gestion-parc-backend:latest' 
         DOCKER_CREDENTIALS_ID = 'docker-hub-credentials' // Docker credentials ID
     }
     stages {
