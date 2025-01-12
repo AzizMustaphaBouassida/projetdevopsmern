@@ -30,16 +30,18 @@ pipeline {
         }
         
         stage('Push Docker Image') {
-            steps {
-                echo "Pushing Docker Image to Docker Hub..."
-                withCredentials([usernamePassword(credentialsId: "$DOCKER_CREDENTIALS_ID", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                    sh '''
-                    echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-                    docker push $DOCKER_IMAGE
-                    '''
-                }
-            }
+    steps {
+        echo "Pushing Docker Image to Docker Hub..."
+        withCredentials([usernamePassword(credentialsId: "$DOCKER_CREDENTIALS_ID", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+            sh '''
+            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+            for i in {1..3}; do
+                docker push $DOCKER_IMAGE && break || sleep 10
+            done
+            '''
         }
+    }
+}
         
         stage('Clean Unused Docker Images') {
             steps {
