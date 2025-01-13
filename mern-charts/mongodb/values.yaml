@@ -6,8 +6,8 @@ image:
   pullPolicy: IfNotPresent
 
 service:
-  host: mongodb-service  # The name of your MongoDB service
-  port: 27017            # The default MongoDB port
+  host: mongodb-service
+  port: 27017
   type: ClusterIP
 
 ingress:
@@ -24,3 +24,9 @@ ingress:
 serviceAccount:
   create: true
   name: mongodb-service-account
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
