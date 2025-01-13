@@ -2,7 +2,7 @@ pipeline {
     agent any
     environment {
         DOCKER_IMAGE = 'azizbouassida11/gestion-parc-backend:latest' 
-        DOCKER_CREDENTIALS_ID = 'docker-hub-credentials' // Docker credentials ID
+        DOCKER_CREDENTIALS_ID = 'docker-hub-credentials' 
     }
     stages {
         stage('Checkout Code') {
