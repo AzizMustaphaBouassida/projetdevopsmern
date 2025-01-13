@@ -1,12 +1,26 @@
-replicaCount : 1
-image :
-repository : mongo
-tag : latest
-pullPolicy : IfNotPresent
+replicaCount: 1
+
+image:
+  repository: mongo
+  tag: latest
+  pullPolicy: IfNotPresent
+
 service:
   host: mongodb-service  # The name of your MongoDB service
-  port: 27017           # The default MongoDB port
-  type : ClusterIP
-ingress :
-enabled : false
+  port: 27017            # The default MongoDB port
+  type: ClusterIP
 
+ingress:
+  enabled: false
+  annotations: {}
+  className: ""
+  hosts:
+    - host: mongodb.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+
+serviceAccount:
+  create: true
+  name: mongodb-service-account
