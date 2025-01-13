@@ -1,14 +1,21 @@
 replicaCount: 3
+
 image:
   repository: your-frontend-image
   tag: latest
   pullPolicy: IfNotPresent
+
 service:
   type: ClusterIP
   port: 3000
+
+serviceAccount:
+  create: true
+
 env:
   - name: REACT_APP_SERVER_URL
     value: "http://server:5000"
+
 ingress:
   enabled: true
   annotations: {}
