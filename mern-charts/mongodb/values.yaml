@@ -3,10 +3,10 @@ image :
 repository : mongo
 tag : latest
 pullPolicy : IfNotPresent
-service :
-type : ClusterIP
-host: mongodb-service
-port : 27017
+service:
+  host: mongodb-service  # The name of your MongoDB service
+  port: 27017           # The default MongoDB port
+  type : ClusterIP
 ingress :
 enabled : false
 

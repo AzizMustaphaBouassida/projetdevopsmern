@@ -11,5 +11,6 @@ spec:
     - name: test-connection
       image: busybox
       command: ['wget']
-      args: ['{{ .Values.service.host | default "localhost" }}:{{ .Values.service.port | default "27017" }}']
+      args:
+        - '{{ .Values.service.host | default "localhost" }}:{{ .Values.service.port | default "27017" }}'
   restartPolicy: Never

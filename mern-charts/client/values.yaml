@@ -21,7 +21,7 @@ ingress:
   annotations: {}
   hosts:
     - host: mern-app.local
-      paths:
+      paths:  
         - path: /
           pathType: Prefix
 
