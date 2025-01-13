@@ -1,15 +1,20 @@
-replicaCount: 3
+replicaCount: 1
+
 image:
-  repository: username/mern-backend
+  repository: your-backend-image
   tag: latest
   pullPolicy: IfNotPresent
+
 service:
   type: ClusterIP
   port: 5000
+
+serviceAccount:
+  create: true
+  name: ""
+
 env:
   - name: MONGO_URI
     value: mongodb://mongodb:27017/mern-app
   - name: PORT
     value: "5000"
-ingress:
-  enabled: false
