@@ -129,6 +129,12 @@ kubectl delete -f kubernetes/
 ---
 ## 6. Captures d'ecrans
 
+![Capture d'écran 2025-01-13 221133](https://github.com/user-attachments/assets/5db99c3d-59cb-429e-949e-0968988079d5)
+![Capture d'écran 2025-01-13 221203](https://github.com/user-attachments/assets/f1d304e0-e0dd-4e5f-b526-9195060522fd)
+![Capture d'écran 2025-01-13 221337](https://github.com/user-attachments/assets/45b7dd71-af6c-44a5-bf16-645816fa0a29)
+![Capture d'écran 2025-01-13 221300](https://github.com/user-attachments/assets/2d36f244-829c-49a6-81d3-4b696cdc10d8)
+![Capture d'écran 2025-01-13 221413](https://github.com/user-attachments/assets/e6cce20f-369c-43a0-adb9-30fb4cc3e963)
+
 ---
 
 ## 7. Conclusion
