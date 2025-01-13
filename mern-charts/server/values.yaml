@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: your-backend-image
+  repository: azizbouassida11/gestion-parc-backend
   tag: latest
   pullPolicy: IfNotPresent
 
