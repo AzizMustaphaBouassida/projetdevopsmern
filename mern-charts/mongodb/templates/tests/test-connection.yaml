@@ -8,8 +8,8 @@ metadata:
     "helm.sh/hook": test
 spec:
   containers:
-    - name: wget
+    - name: test-connection
       image: busybox
       command: ['wget']
-      args: ['{{ include "mongodb.fullname" . }}:{{ .Values.service.port }}']
+      args: ['{{ .Values.service.host | default "localhost" }}:{{ .Values.service.port | default "27017" }}']
   restartPolicy: Never

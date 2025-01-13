@@ -5,6 +5,8 @@ tag : latest
 pullPolicy : IfNotPresent
 service :
 type : ClusterIP
+host: mongodb-service
 port : 27017
 ingress :
 enabled : false
+
