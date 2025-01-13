@@ -1,9 +1,10 @@
 replicaCount: 3
 
 image:
-  repository: your-frontend-image
+  repository: azizbouassida11/gestion-parc-frontend
   tag: latest
   pullPolicy: IfNotPresent
+
 
 service:
   type: ClusterIP
