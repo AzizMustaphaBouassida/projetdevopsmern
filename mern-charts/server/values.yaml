@@ -18,3 +18,13 @@ env:
     value: mongodb://mongodb:27017/mern-app
   - name: PORT
     value: "5000"
+
+ingress:
+  enabled: false
+  annotations: {}
+  hosts:
+    - host: backend.example.com
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
